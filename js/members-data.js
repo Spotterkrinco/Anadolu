@@ -27,7 +27,7 @@ const MEMBERS = [
   { name: "spotter_ruzgar", role: "Manager", link: "https://www.instagram.com/spotter_ruzgar/", photo: "" },
   { name: "aviation_gunnar", role: "Member", link: "https://www.instagram.com/aviation_gunnar/", photo: "" },
   { name: "spotter_keremm", role: "Member", link: "https://www.instagram.com/spotter_keremm/", photo: "" },
-  { name: "spotteryusuf1", role: "Manager", link: "https://www.instagram.com/spotteryusuf1/", photo: "" },
+  { name: "spotteryusuf1", role: "Manager", link: "https://www.instagram.com/spotteryusuf1/", photo: "img/members/yusuf.jpg" },
   { name: "spottereymen6", role: "Member", link: "https://www.instagram.com/spottereymen6/", photo: "" },
   { name: "burakspotter_", role: "Member", link: "https://www.instagram.com/burakspotter_/", photo: "" },
   { name: "spotter_buyrucu", role: "Member", link: "https://www.instagram.com/spotter_buyrucu/", photo: "" },

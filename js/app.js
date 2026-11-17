@@ -324,8 +324,11 @@ document.addEventListener('DOMContentLoaded', () => {
     item.addEventListener('click', () => {
       const title = item.querySelector('.gallery-info h4')?.textContent || '';
       const desc = item.querySelector('.gallery-info p')?.textContent || '';
+      const img = item.querySelector('.gallery-img img');
       const placeholder = item.querySelector('.gallery-placeholder');
-      if (placeholder) {
+      if (img) {
+        lightboxImg.innerHTML = `<img src="${img.src}" alt="${img.alt || title}">`;
+      } else if (placeholder) {
         lightboxImg.innerHTML = placeholder.outerHTML;
         lightboxImg.querySelector('.gallery-placeholder').style.height = '300px';
         lightboxImg.querySelector('.gallery-placeholder span').style.fontSize = '72px';
@@ -338,7 +341,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   lightbox.querySelector('.lightbox-close').addEventListener('click', closeLightbox);
   lightbox.addEventListener('click', (e) => {
-    if (e.target === lightbox) closeLightbox();
+    if (e.target === lightbox || !lightbox.querySelector('.lightbox-content').contains(e.target)) {
+      closeLightbox();
+    }
   });
 
   function closeLightbox() {
