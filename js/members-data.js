@@ -2,7 +2,7 @@ const MEMBERS = [
   { name: "spoterkrinco",          fullName: "Emir Ali Aydar",      city: "İstanbul/LTFM", role: "Yönetim Kurulu",           link: "https://www.instagram.com/spoterkrinco/",          photo: "img/members/Emir Ali Aydar.jpg" },
   { name: "spottingdeniz",         fullName: "",                    city: "",              role: "Üye",                      link: "https://www.instagram.com/spottingdeniz/",         photo: "" },
   { name: "spotter5858",           fullName: "",                    city: "",              role: "Üye",                      link: "https://www.instagram.com/spotter5858/",           photo: "" },
-  { name: "ltauspotter",           fullName: "Metehan Güzel",                    city: "",              role: "Üye",                      link: "https://www.instagram.com/ltauspotter/",           photo: "img/members/Ltau spoter.jpg" },
+  { name: "ltauspotter",           fullName: "Metehan Güzel",                    city: "",              role: "Üye",                      link: "https://www.instagram.com/ltauspotter/",           photo: "img/members/Ltau Spoter.jpg" },
   { name: "ctnaviation",           fullName: "",                    city: "",              role: "Üye",                      link: "https://www.instagram.com/ctnaviation/",           photo: "" },
   { name: "izmirspotterkemal",     fullName: "",                    city: "",              role: "Üye",                      link: "https://www.instagram.com/izmirspotterkemal/",     photo: "" },
   { name: "cinarspotting",         fullName: "Çağan Çınar",        city: "Dalaman/LTBS",  role: "Ekip Başkanı",             link: "https://www.instagram.com/cinarspotting/",         photo: "img/members/Çağan Çınar.jpg" },
