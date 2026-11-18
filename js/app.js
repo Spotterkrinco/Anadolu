@@ -296,22 +296,110 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // ===== SCROLL REVEAL (must be defined before gallery render) =====
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+  // ===== GALLERY DATA =====
+  const GALLERY_PHOTOS = [
+    {
+      file: 'img/a350.jpg',
+      airline: 'Turkish Airlines',
+      model: 'Airbus A350-900',
+      category: 'commercial'
+    },
+    {
+      file: 'img/THY 777.jpg',
+      airline: 'Turkish Airlines',
+      model: 'Boeing 777',
+      category: 'commercial'
+    },
+    {
+      file: 'img/A320 Neo pegasus.jpg',
+      airline: 'Pegasus Airlines',
+      model: 'Airbus A320neo',
+      category: 'commercial'
+    },
+    {
+      file: 'img/Ajet A321 Neo.jpg',
+      airline: 'AJet',
+      model: 'Airbus A321neo',
+      category: 'commercial'
+    },
+    {
+      file: 'img/Ajet Boeing 737-800.jpg',
+      airline: 'AJet',
+      model: 'Boeing 737-800',
+      category: 'commercial'
+    },
+    {
+      file: 'img/Türk Yıldızları.jpg',
+      airline: 'Türk Hava Kuvvetleri',
+      model: 'Türk Yıldızları',
+      category: 'military'
+    },
+    {
+      file: 'img/Solotürk.jpg',
+      airline: 'Türk Hava Kuvvetleri',
+      model: 'SoloTürk — F-16',
+      category: 'military'
+    },
+    {
+      file: 'img/TC-HGE ambulans helikopter.jpg',
+      airline: 'TC-HGE',
+      model: 'Ambulans Helikopter',
+      category: 'general'
+    }
+  ];
+
+  // ===== GALLERY RENDER =====
+  const galleryGrid = document.getElementById('galleryGrid');
+
+  function renderGallery(filter) {
+    galleryGrid.innerHTML = '';
+    const filtered = filter === 'all'
+      ? GALLERY_PHOTOS
+      : GALLERY_PHOTOS.filter(p => p.category === filter);
+
+    filtered.forEach(photo => {
+      const item = document.createElement('div');
+      item.classList.add('gallery-item', 'reveal');
+      item.dataset.category = photo.category;
+      item.innerHTML = `
+        <div class="gallery-img">
+          <img src="${photo.file}" alt="${photo.airline} ${photo.model}" loading="lazy">
+        </div>
+        <div class="gallery-info">
+          <h4>${photo.model}</h4>
+          <p>${photo.airline}</p>
+        </div>
+      `;
+      item.addEventListener('click', () => openLightbox(photo));
+      galleryGrid.appendChild(item);
+    });
+
+    // Observe new items for scroll reveal
+    galleryGrid.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+  }
+
+  renderGallery('all');
+
   // ===== GALLERY FILTER =====
   const galleryCatBtns = document.querySelectorAll('.gallery-cat-btn');
-  const galleryItems = document.querySelectorAll('.gallery-item');
 
   galleryCatBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       galleryCatBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      const cat = btn.dataset.category;
-      galleryItems.forEach(item => {
-        if (cat === 'all' || item.dataset.category === cat) {
-          item.classList.remove('hidden');
-        } else {
-          item.classList.add('hidden');
-        }
-      });
+      renderGallery(btn.dataset.category);
     });
   });
 
@@ -320,24 +408,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const lightboxImg = document.getElementById('lightboxImg');
   const lightboxInfo = document.getElementById('lightboxInfo');
 
-  galleryItems.forEach(item => {
-    item.addEventListener('click', () => {
-      const title = item.querySelector('.gallery-info h4')?.textContent || '';
-      const desc = item.querySelector('.gallery-info p')?.textContent || '';
-      const img = item.querySelector('.gallery-img img');
-      const placeholder = item.querySelector('.gallery-placeholder');
-      if (img) {
-        lightboxImg.innerHTML = `<img src="${img.src}" alt="${img.alt || title}">`;
-      } else if (placeholder) {
-        lightboxImg.innerHTML = placeholder.outerHTML;
-        lightboxImg.querySelector('.gallery-placeholder').style.height = '300px';
-        lightboxImg.querySelector('.gallery-placeholder span').style.fontSize = '72px';
-      }
-      lightboxInfo.textContent = `${title} — ${desc}`;
-      lightbox.classList.add('active');
-      document.body.style.overflow = 'hidden';
-    });
-  });
+  function openLightbox(photo) {
+    lightboxImg.innerHTML = `<img src="${photo.file}" alt="${photo.airline} ${photo.model}">`;
+    lightboxInfo.textContent = `${photo.model} — ${photo.airline}`;
+    lightbox.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
 
   lightbox.querySelector('.lightbox-close').addEventListener('click', closeLightbox);
   lightbox.addEventListener('click', (e) => {
@@ -352,19 +428,6 @@ document.addEventListener('DOMContentLoaded', () => {
       document.body.style.overflow = '';
     }
   }
-
-  // ===== SCROLL REVEAL =====
-  const revealElements = document.querySelectorAll('.reveal');
-  const revealObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        revealObserver.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
-
-  revealElements.forEach(el => revealObserver.observe(el));
 
   // Re-observe featured cards after they're rendered
   document.querySelectorAll('.featured-card.reveal').forEach(el => revealObserver.observe(el));
