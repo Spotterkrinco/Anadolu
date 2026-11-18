@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
     card.classList.add('featured-card', 'reveal');
     card.innerHTML = `
       ${avatarHTML(member, 'featured-avatar', 80)}
-      <div class="featured-name">${member.name}</div>
+      <div class="featured-name">${getDisplayName(member)}</div>
       <div class="featured-role">MANAGER</div>
       <a href="${member.link}" target="_blank" rel="noopener" class="featured-link" onclick="event.stopPropagation()">
         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
@@ -115,8 +115,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let currentFilter = 'all';
 
-  function getInitials(name) {
-    const parts = name.replace(/[_\.]/g, ' ').split(/\s+/);
+  function getDisplayName(member) {
+    return member.fullName || member.name;
+  }
+
+  function getInitials(member) {
+    const name = member.fullName || member.name;
+    const parts = name.replace(/[_.]/g, ' ').split(/\s+/);
     if (parts.length >= 2) {
       return (parts[0][0] + parts[1][0]).toUpperCase();
     }
@@ -129,9 +134,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function avatarHTML(member, cssClass, size) {
-    const initials = getInitials(member.name);
+    const initials = getInitials(member);
+    const displayName = getDisplayName(member);
     if (member.photo) {
-      return `<div class="${cssClass} has-photo" style="width:${size}px;height:${size}px;min-width:${size}px"><img src="${member.photo}" alt="${member.name}" onerror="this.parentElement.innerHTML='${initials}';this.parentElement.classList.remove('has-photo')"></div>`;
+      return `<div class="${cssClass} has-photo" style="width:${size}px;height:${size}px;min-width:${size}px"><img src="${member.photo}" alt="${displayName}" onerror="this.parentElement.innerHTML='${initials}';this.parentElement.classList.remove('has-photo')"></div>`;
     }
     return `<div class="${cssClass}" style="width:${size}px;height:${size}px;min-width:${size}px">${initials}</div>`;
   }
@@ -148,6 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const q = search.toLowerCase();
       filteredMembers = filteredMembers.filter(m =>
         m.name.toLowerCase().includes(q) ||
+        (m.fullName && m.fullName.toLowerCase().includes(q)) ||
         m.role.toLowerCase().includes(q) ||
         m.link.toLowerCase().includes(q)
       );
@@ -170,7 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="member-card-top">
           ${avatarHTML(member, avatarClass, 56)}
           <div class="member-info">
-            <div class="member-name">${member.name}</div>
+            <div class="member-name">${getDisplayName(member)}</div>
             <span class="member-role ${isManager ? 'role-manager' : 'role-member'}">
               ${member.role}
             </span>
@@ -226,16 +233,33 @@ document.addEventListener('DOMContentLoaded', () => {
     const isManager = member.role === 'Manager';
     const username = getUsername(member.link);
     const modalAvatarClass = isManager ? 'modal-avatar mgr' : 'modal-avatar mbr';
+    const fullNameRow = member.fullName ? `
+        <div class="modal-detail">
+          <div class="modal-detail-icon">&#128100;</div>
+          <div class="modal-detail-text">
+            <div class="modal-detail-label">İsim Soyisim</div>
+            <div class="modal-detail-value">${member.fullName}</div>
+          </div>
+        </div>` : '';
+    const cityRow = member.city ? `
+        <div class="modal-detail">
+          <div class="modal-detail-icon">&#128205;</div>
+          <div class="modal-detail-text">
+            <div class="modal-detail-label">Şehir / Havalimanı</div>
+            <div class="modal-detail-value">${member.city}</div>
+          </div>
+        </div>` : '';
 
     modalBody.innerHTML = `
       <div class="modal-header">
         ${avatarHTML(member, modalAvatarClass, 100)}
-        <div class="modal-name">${member.name}</div>
+        <div class="modal-name">${getDisplayName(member)}</div>
         <span class="modal-role-badge ${isManager ? 'role-manager' : 'role-member'}">
           ${member.role}
         </span>
       </div>
       <div class="modal-body-content">
+        ${fullNameRow}
         <div class="modal-detail">
           <div class="modal-detail-icon">&#128100;</div>
           <div class="modal-detail-text">
@@ -250,6 +274,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="modal-detail-value">${member.role}</div>
           </div>
         </div>
+        ${cityRow}
         <div class="modal-detail">
           <div class="modal-detail-icon">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
