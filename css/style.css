@@ -489,11 +489,11 @@ body {
   position: relative; z-index: 1;
 }
 .member-avatar {
-  width: 56px; height: 56px; min-width: 56px;
+  width: 64px; height: 64px; min-width: 64px;
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   font-family: var(--font-display);
-  font-size: 20px; font-weight: 800;
+  font-size: 22px; font-weight: 800;
   color: var(--white);
 }
 .member-avatar.manager-avatar {
@@ -727,7 +727,7 @@ body {
   background: linear-gradient(90deg, var(--accent), var(--manager), var(--member));
 }
 .modal-avatar {
-  width: 100px; height: 100px;
+  width: 110px; height: 110px;
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   margin: 0 auto 20px;
@@ -917,7 +917,25 @@ body {
   .btn { width: 100%; max-width: 280px; justify-content: center; }
   .section { padding: 60px 0; }
   .section-header { margin-bottom: 40px; }
-  .members-grid { grid-template-columns: 1fr; }
+  .members-grid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 14px;
+  }
+  .member-card { padding: 20px 18px; }
+  .member-avatar {
+    width: 68px; height: 68px; min-width: 68px;
+    font-size: 22px;
+  }
+  .modal-content {
+    max-width: 420px;
+    width: 92%;
+    max-height: 92vh;
+    overflow-y: auto;
+  }
+  .modal-header { padding: 36px 24px 24px; }
+  .modal-avatar { width: 84px; height: 84px; font-size: 30px; }
+  .modal-name { font-size: 20px; }
+  .modal-body-content { padding: 20px; }
   .gallery-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
 }
 
@@ -928,5 +946,27 @@ body {
   .stat-number { font-size: 24px; }
   .container { padding: 0 16px; }
   .about-card, .contact-card { padding: 28px 20px; }
-  .modal-content { width: 95%; }
+  .members-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .member-card { padding: 16px 14px; }
+  .member-avatar {
+    width: 64px; height: 64px; min-width: 64px;
+    font-size: 21px;
+  }
+  .member-name { font-size: 15px; }
+  .modal-content {
+    width: 96%;
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: var(--radius);
+  }
+  .modal-header { padding: 32px 18px 20px; }
+  .modal-avatar { width: 76px; height: 76px; font-size: 26px; margin-bottom: 14px; }
+  .modal-name { font-size: 18px; }
+  .modal-body-content { padding: 16px; }
+  .modal-detail { padding: 12px; gap: 10px; }
+  .modal-detail-icon { width: 34px; height: 34px; min-width: 34px; font-size: 15px; }
+  .modal-detail-value { font-size: 13px; }
 }
