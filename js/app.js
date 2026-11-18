@@ -382,6 +382,12 @@ document.addEventListener('DOMContentLoaded', () => {
       airline: 'TC-HGE',
       model: 'Ambulans Helikopter',
       category: 'general'
+    },
+    {
+      file: 'img/İran airtour A320-200.jpg',
+      airline: 'Iran Air Tour',
+      model: 'Airbus A320-200',
+      category: 'commercial'
     }
   ];
 
