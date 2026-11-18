@@ -50,9 +50,18 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ===== COUNTER ANIMATION =====
+  const ROLE_ORDER = {
+    'Ekip Başkanı':           0,
+    'Ekip Başkan Yardımcısı': 1,
+    'Kıdemli Yönetim Kurulu': 2,
+    'Yönetim Kurulu':         3,
+    'Üye':                    4
+  };
+  const NON_MEMBER_ROLES = new Set(['Ekip Başkanı', 'Ekip Başkan Yardımcısı', 'Kıdemli Yönetim Kurulu', 'Yönetim Kurulu']);
+
   const totalMembers = MEMBERS.length;
-  const managers = MEMBERS.filter(m => m.role === 'Manager').length;
-  const memberOnly = MEMBERS.filter(m => m.role === 'Member').length;
+  const managers = MEMBERS.filter(m => NON_MEMBER_ROLES.has(m.role)).length;
+  const memberOnly = MEMBERS.filter(m => !NON_MEMBER_ROLES.has(m.role)).length;
 
   function animateCounter(el, target, duration) {
     const start = 0;
@@ -82,9 +91,14 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('countManager').textContent = managers;
   document.getElementById('countMember').textContent = memberOnly;
 
-  // ===== FEATURED MEMBERS (MANAGERS) =====
+  // ===== FEATURED MEMBERS (YÖNETİM) =====
   const featuredGrid = document.getElementById('featuredGrid');
-  const managerMembers = MEMBERS.filter(m => m.role === 'Manager');
+  const managerMembers = MEMBERS.filter(m => NON_MEMBER_ROLES.has(m.role))
+    .sort((a, b) => {
+      const rDiff = (ROLE_ORDER[a.role] ?? 99) - (ROLE_ORDER[b.role] ?? 99);
+      if (rDiff !== 0) return rDiff;
+      return getDisplayName(a).localeCompare(getDisplayName(b), 'tr', { sensitivity: 'base' });
+    });
 
   managerMembers.forEach(member => {
     const card = document.createElement('div');
@@ -92,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
     card.innerHTML = `
       ${avatarHTML(member, 'featured-avatar', 80)}
       <div class="featured-name">${getDisplayName(member)}</div>
-      <div class="featured-role">MANAGER</div>
+      <div class="featured-role">${member.role.toUpperCase()}</div>
       <a href="${member.link}" target="_blank" rel="noopener" class="featured-link" onclick="event.stopPropagation()">
         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="2" y="2" width="20" height="20" rx="5"></rect>
@@ -147,7 +161,11 @@ document.addEventListener('DOMContentLoaded', () => {
     let filteredMembers = MEMBERS;
 
     if (filter && filter !== 'all') {
-      filteredMembers = filteredMembers.filter(m => m.role === filter);
+      if (filter === 'yonetim') {
+        filteredMembers = filteredMembers.filter(m => NON_MEMBER_ROLES.has(m.role));
+      } else {
+        filteredMembers = filteredMembers.filter(m => m.role === filter);
+      }
     }
 
     if (search) {
@@ -160,6 +178,13 @@ document.addEventListener('DOMContentLoaded', () => {
       );
     }
 
+    const roleOrder = ROLE_ORDER;
+    filteredMembers = [...filteredMembers].sort((a, b) => {
+      const rDiff = (roleOrder[a.role] ?? 99) - (roleOrder[b.role] ?? 99);
+      if (rDiff !== 0) return rDiff;
+      return getDisplayName(a).localeCompare(getDisplayName(b), 'tr', { sensitivity: 'base' });
+    });
+
     if (filteredMembers.length === 0) {
       noResults.classList.add('visible');
     } else {
@@ -168,7 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     filteredMembers.forEach((member, i) => {
       const username = getUsername(member.link);
-      const isManager = member.role === 'Manager';
+      const isManager = NON_MEMBER_ROLES.has(member.role);
       const avatarClass = isManager ? 'member-avatar manager-avatar' : 'member-avatar member-avatar-blue';
       const card = document.createElement('div');
       card.classList.add('member-card');
@@ -230,7 +255,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const modalBody = document.getElementById('modalBody');
 
   function openMemberModal(member) {
-    const isManager = member.role === 'Manager';
+    const isManager = NON_MEMBER_ROLES.has(member.role);
     const username = getUsername(member.link);
     const modalAvatarClass = isManager ? 'modal-avatar mgr' : 'modal-avatar mbr';
     const fullNameRow = member.fullName ? `
