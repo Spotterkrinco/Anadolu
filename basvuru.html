@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Anadolu Spotting Team üyelik başvurusu. Ekibimize katılmak için formu doldurun.">
+  <title>Üyelik Başvurusu | Anadolu Spotting Team</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ===== BASVURU PAGE ===== */
+    .basvuru-page {
+      min-height: 100vh;
+      background:
+        radial-gradient(ellipse at 20% 30%, rgba(232,83,14,0.07) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 70%, rgba(59,130,246,0.06) 0%, transparent 50%),
+        linear-gradient(180deg, var(--navy) 0%, var(--dark) 60%, var(--dark) 100%);
+      padding-top: 100px;
+      padding-bottom: 80px;
+    }
+
+    .basvuru-hero {
+      text-align: center;
+      padding: 60px 24px 48px;
+    }
+
+    .basvuru-badge {
+      display: inline-block;
+      padding: 8px 20px;
+      background: var(--white-05);
+      border: 1px solid var(--white-10);
+      border-radius: 50px;
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 3px;
+      color: var(--accent);
+      margin-bottom: 24px;
+      animation: fadeInDown 0.8s ease-out;
+    }
+
+    .basvuru-title {
+      font-family: var(--font-display);
+      font-size: clamp(28px, 6vw, 56px);
+      font-weight: 900;
+      letter-spacing: 3px;
+      color: var(--white);
+      line-height: 1.1;
+      margin-bottom: 20px;
+      animation: fadeInUp 0.8s ease-out 0.1s both;
+    }
+
+    .basvuru-title span { color: var(--accent); }
+
+    .basvuru-desc {
+      max-width: 600px;
+      margin: 0 auto 16px;
+      color: var(--white-70);
+      font-size: clamp(15px, 2.5vw, 18px);
+      font-weight: 400;
+      line-height: 1.7;
+      animation: fadeInUp 0.8s ease-out 0.2s both;
+    }
+
+    .basvuru-features {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      flex-wrap: wrap;
+      margin: 32px 0 48px;
+      animation: fadeInUp 0.8s ease-out 0.3s both;
+    }
+
+    .basvuru-feature {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--white-70);
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .basvuru-feature-icon {
+      width: 32px; height: 32px;
+      background: var(--white-05);
+      border: 1px solid var(--white-10);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+    }
+
+    /* ===== FORM CONTAINER ===== */
+    .form-wrapper {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 0 24px;
+      animation: fadeInUp 0.8s ease-out 0.4s both;
+    }
+
+    .form-card {
+      background: linear-gradient(135deg, var(--navy-light) 0%, var(--navy-mid) 100%);
+      border: 1px solid var(--white-10);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px var(--white-05);
+    }
+
+    .form-card-header {
+      padding: 24px 32px;
+      background: rgba(232,83,14,0.08);
+      border-bottom: 1px solid var(--white-10);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .form-card-header-icon {
+      width: 40px; height: 40px;
+      background: var(--accent);
+      border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .form-card-header-text h3 {
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--white);
+      margin-bottom: 2px;
+    }
+
+    .form-card-header-text p {
+      font-size: 13px;
+      color: var(--white-50);
+    }
+
+    .form-iframe-wrap {
+      position: relative;
+      background: #fff;
+    }
+
+    .form-iframe-wrap iframe {
+      display: block;
+      width: 100%;
+      height: 820px;
+      border: none;
+    }
+
+    /* ===== NOTICE CARD ===== */
+    .notice-card {
+      max-width: 820px;
+      margin: 32px auto 0;
+      padding: 0 24px;
+      animation: fadeInUp 0.8s ease-out 0.5s both;
+    }
+
+    .notice-inner {
+      background: var(--white-05);
+      border: 1px solid var(--white-10);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .notice-icon {
+      font-size: 20px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .notice-text h4 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--white-90);
+      margin-bottom: 6px;
+      letter-spacing: 0.5px;
+    }
+
+    .notice-text p {
+      font-size: 13px;
+      color: var(--white-50);
+      line-height: 1.6;
+    }
+
+    .notice-text a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .notice-text a:hover { color: var(--accent-hover); }
+
+    /* ===== BACK LINK ===== */
+    .back-section {
+      text-align: center;
+      margin-top: 48px;
+      padding-bottom: 20px;
+      animation: fadeInUp 0.8s ease-out 0.6s both;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--white-50);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: var(--transition);
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--white-10);
+    }
+
+    .back-link:hover {
+      color: var(--white);
+      background: var(--white-05);
+      border-color: var(--white-20);
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      .basvuru-page { padding-top: 80px; }
+      .basvuru-hero { padding: 40px 16px 32px; }
+      .basvuru-features { gap: 20px; }
+      .form-wrapper, .notice-card { padding: 0 16px; }
+      .form-card-header { padding: 18px 20px; }
+      .form-iframe-wrap iframe { height: 1000px; }
+      .notice-inner { flex-direction: column; gap: 10px; }
+    }
+
+    @media (max-width: 480px) {
+      .basvuru-features { flex-direction: column; align-items: center; }
+      .form-iframe-wrap iframe { height: 1100px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVIGATION -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <span class="logo-icon">&#9992;</span>
+        <span class="logo-text">ANADOLU<span class="logo-accent">SPOTTING</span></span>
+      </a>
+      <button class="nav-toggle" id="navToggle" aria-label="Menüyü aç">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="index.html" class="nav-link">Ana Sayfa</a></li>
+        <li><a href="index.html#about" class="nav-link">Hakkımızda</a></li>
+        <li><a href="index.html#members" class="nav-link">Üyelerimiz</a></li>
+        <li><a href="index.html#gallery" class="nav-link">Galeri</a></li>
+        <li><a href="index.html#contact" class="nav-link">İletişim</a></li>
+        <li><a href="basvuru.html" class="nav-link nav-link-join active">Üyelik Başvurusu</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- BASVURU PAGE -->
+  <div class="basvuru-page">
+
+    <!-- HERO -->
+    <div class="basvuru-hero">
+      <div class="basvuru-badge">JOIN THE TEAM</div>
+      <h1 class="basvuru-title">
+        Ekibimize <span>Katıl!</span>
+      </h1>
+      <p class="basvuru-desc">
+        Havacılık tutkunu musun? Türkiye'nin en aktif spotting topluluğuna katıl.
+        Aşağıdaki formu doldurun, ekibimiz en kısa sürede sizinle iletişime geçecek.
+      </p>
+
+      <div class="basvuru-features">
+        <div class="basvuru-feature">
+          <div class="basvuru-feature-icon">&#9992;</div>
+          <span>Aktif Spotting Etkinlikleri</span>
+        </div>
+        <div class="basvuru-feature">
+          <div class="basvuru-feature-icon">&#128101;</div>
+          <span>Güçlü Ekip Ruhu</span>
+        </div>
+        <div class="basvuru-feature">
+          <div class="basvuru-feature-icon">&#128247;</div>
+          <span>Fotoğraf Paylaşımı</span>
+        </div>
+        <div class="basvuru-feature">
+          <div class="basvuru-feature-icon">&#127919;</div>
+          <span>Eğitim & Gelişim</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- FORM -->
+    <div class="form-wrapper">
+      <div class="form-card">
+        <div class="form-card-header">
+          <div class="form-card-header-icon">&#128203;</div>
+          <div class="form-card-header-text">
+            <h3>ÜYELİK BAŞVURU FORMU</h3>
+            <p>Tüm alanları eksiksiz doldurun — Google Forms üzerinden gönderilir</p>
+          </div>
+        </div>
+        <div class="form-iframe-wrap">
+          <iframe
+            src="https://forms.gle/82b7p29Z9HsSeBM96"
+            title="Anadolu Spotting Team Üyelik Başvuru Formu"
+            allowfullscreen
+            loading="lazy"
+          >
+            Tarayıcınız iframe desteklemiyor.
+            <a href="https://forms.gle/82b7p29Z9HsSeBM96" target="_blank" rel="noopener">
+              Formu yeni sekmede açmak için tıklayın.
+            </a>
+          </iframe>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOTICE -->
+    <div class="notice-card">
+      <div class="notice-inner">
+        <div class="notice-icon">&#8505;&#65039;</div>
+        <div class="notice-text">
+          <h4>Başvuru Değerlendirme Süreci</h4>
+          <p>
+            Başvurunuz ekip yönetimi tarafından incelenecek ve size en kısa sürede
+            Instagram DM veya e-posta yoluyla geri dönüş yapılacaktır.
+            Sorularınız için
+            <a href="https://www.instagram.com/anadolu_spottingteam/" target="_blank" rel="noopener">@anadolu_spottingteam</a>
+            veya
+            <a href="mailto:anadoluspottingteam@gmail.com">anadoluspottingteam@gmail.com</a>
+            adresine ulaşabilirsiniz.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- BACK LINK -->
+    <div class="back-section">
+      <a href="index.html" class="back-link">
+        &#8592; Ana Sayfaya Dön
+      </a>
+    </div>
+
+  </div>
+
+  <script>
+    // Navbar scroll effect (same as main page)
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 50);
+    });
+
+    // Mobile menu toggle
+    const navToggle = document.getElementById('navToggle');
+    const navMenu = document.getElementById('navMenu');
+    navToggle.addEventListener('click', () => {
+      navToggle.classList.toggle('active');
+      navMenu.classList.toggle('open');
+    });
+  </script>
+</body>
+</html>

@@ -79,6 +79,26 @@ body {
 .nav-link:hover, .nav-link.active {
   color: var(--white); background: var(--white-10);
 }
+.nav-link-join {
+  color: var(--accent) !important;
+  border: 1px solid rgba(232,83,14,0.35);
+  font-weight: 600;
+}
+.nav-link-join:hover, .nav-link-join.active {
+  background: rgba(232,83,14,0.12) !important;
+  border-color: var(--accent);
+  color: var(--accent-hover) !important;
+}
+.nav-menu.open {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 100%; left: 0; right: 0;
+  background: rgba(6,13,24,0.98);
+  backdrop-filter: blur(20px);
+  padding: 16px 24px;
+  border-top: 1px solid var(--white-10);
+}
 .nav-toggle {
   display: none; flex-direction: column; gap: 5px;
   background: none; border: none; cursor: pointer; padding: 4px;
@@ -214,6 +234,18 @@ body {
 .btn-primary:hover {
   background: var(--accent-hover);
   box-shadow: 0 8px 30px var(--accent-glow);
+  transform: translateY(-2px);
+}
+.btn-join {
+  background: linear-gradient(135deg, #1a3a6a 0%, #0f2a52 100%);
+  color: var(--white);
+  border: 1px solid rgba(59,130,246,0.4);
+  box-shadow: 0 4px 20px rgba(59,130,246,0.2);
+}
+.btn-join:hover {
+  background: linear-gradient(135deg, #2a4a7a 0%, #1a3a62 100%);
+  border-color: rgba(59,130,246,0.7);
+  box-shadow: 0 8px 30px rgba(59,130,246,0.3);
   transform: translateY(-2px);
 }
 .btn-outline {
@@ -799,9 +831,11 @@ body {
   margin-bottom: 16px;
 }
 .contact-link {
+  display: block;
   color: var(--accent); text-decoration: none;
   font-weight: 600; font-size: 14px;
   transition: var(--transition);
+  margin-top: 4px;
 }
 .contact-link:hover { color: var(--accent-hover); }
 
