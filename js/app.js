@@ -39,31 +39,44 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ===== PARTICLES =====
   const particlesContainer = document.getElementById('heroParticles');
-  for (let i = 0; i < 30; i++) {
-    const particle = document.createElement('div');
-    particle.classList.add('particle');
-    particle.style.left = Math.random() * 100 + '%';
-    particle.style.width = particle.style.height = (Math.random() * 3 + 1) + 'px';
-    particle.style.animationDuration = (Math.random() * 15 + 10) + 's';
-    particle.style.animationDelay = (Math.random() * 10) + 's';
-    particlesContainer.appendChild(particle);
+  if (particlesContainer) {
+    for (let i = 0; i < 30; i++) {
+      const particle = document.createElement('div');
+      particle.classList.add('particle');
+      particle.style.left = Math.random() * 100 + '%';
+      particle.style.width = particle.style.height = (Math.random() * 3 + 1) + 'px';
+      particle.style.animationDuration = (Math.random() * 15 + 10) + 's';
+      particle.style.animationDelay = (Math.random() * 10) + 's';
+      particlesContainer.appendChild(particle);
+    }
   }
 
-  // ===== COUNTER ANIMATION =====
+  // ===== ROLES CONFIGURATION =====
   const ROLE_ORDER = {
     'Ekip Başkanı':           0,
     'Ekip Başkan Yardımcısı': 1,
     'Kıdemli Yönetim Kurulu': 2,
     'Yönetim Kurulu':         3,
-    'Üye':                    4
+    'Yönetim Kurulu Adayı':   4,
+    'Üye':                    5
   };
-  const NON_MEMBER_ROLES = new Set(['Ekip Başkanı', 'Ekip Başkan Yardımcısı', 'Kıdemli Yönetim Kurulu', 'Yönetim Kurulu']);
 
-  const totalMembers = MEMBERS.length;
-  const managers = MEMBERS.filter(m => NON_MEMBER_ROLES.has(m.role)).length;
-  const memberOnly = MEMBERS.filter(m => !NON_MEMBER_ROLES.has(m.role)).length;
+  const NON_MEMBER_ROLES = new Set([
+    'Ekip Başkanı',
+    'Ekip Başkan Yardımcısı',
+    'Kıdemli Yönetim Kurulu',
+    'Yönetim Kurulu',
+    'Yönetim Kurulu Adayı'
+  ]);
 
+  // ===== MEMBER DATA (Static from members-data.js) =====
+  function getAllMembers() {
+    return typeof MEMBERS !== 'undefined' ? [...MEMBERS] : [];
+  }
+
+  // ===== COUNTER ANIMATION & STATS =====
   function animateCounter(el, target, duration) {
+    if (!el) return;
     const start = 0;
     const startTime = performance.now();
     function update(currentTime) {
@@ -76,66 +89,46 @@ document.addEventListener('DOMContentLoaded', () => {
     requestAnimationFrame(update);
   }
 
-  const memberCountEl = document.getElementById('memberCount');
-  const managerCountEl = document.getElementById('managerCount');
-  const totalMemberCountEl = document.getElementById('totalMemberCount');
+  function updateStatsAndCounters(animate = false) {
+    const all = getAllMembers();
+    const total = all.length;
+    const managers = all.filter(m => NON_MEMBER_ROLES.has(m.role)).length;
+    const memberOnly = all.filter(m => !NON_MEMBER_ROLES.has(m.role)).length;
 
-  setTimeout(() => {
-    animateCounter(memberCountEl, totalMembers, 1500);
-    animateCounter(managerCountEl, managers, 1500);
-  }, 500);
-  totalMemberCountEl.textContent = totalMembers;
+    const memberCountEl = document.getElementById('memberCount');
+    const managerCountEl = document.getElementById('managerCount');
+    const totalMemberCountEl = document.getElementById('totalMemberCount');
 
-  // Filter counts
-  document.getElementById('countAll').textContent = totalMembers;
-  document.getElementById('countManager').textContent = managers;
-  document.getElementById('countMember').textContent = memberOnly;
+    if (animate) {
+      setTimeout(() => {
+        animateCounter(memberCountEl, total, 1500);
+        animateCounter(managerCountEl, managers, 1500);
+      }, 500);
+    } else {
+      if (memberCountEl) memberCountEl.textContent = total;
+      if (managerCountEl) managerCountEl.textContent = managers;
+    }
 
-  // ===== FEATURED MEMBERS (YÖNETİM) =====
-  const featuredGrid = document.getElementById('featuredGrid');
-  const managerMembers = MEMBERS.filter(m => NON_MEMBER_ROLES.has(m.role))
-    .sort((a, b) => {
-      const rDiff = (ROLE_ORDER[a.role] ?? 99) - (ROLE_ORDER[b.role] ?? 99);
-      if (rDiff !== 0) return rDiff;
-      return getDisplayName(a).localeCompare(getDisplayName(b), 'tr', { sensitivity: 'base' });
-    });
+    if (totalMemberCountEl) totalMemberCountEl.textContent = total;
 
-  managerMembers.forEach(member => {
-    const card = document.createElement('div');
-    card.classList.add('featured-card', 'reveal');
-    card.innerHTML = `
-      ${avatarHTML(member, 'featured-avatar', 80)}
-      <div class="featured-name">${getDisplayName(member)}</div>
-      <div class="featured-role">${member.role.toUpperCase()}</div>
-      <a href="${member.link}" target="_blank" rel="noopener" class="featured-link" onclick="event.stopPropagation()">
-        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="2" y="2" width="20" height="20" rx="5"></rect>
-          <circle cx="12" cy="12" r="5"></circle>
-          <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"></circle>
-        </svg>
-        Profili Görüntüle
-      </a>
-    `;
-    card.addEventListener('click', () => openMemberModal(member));
-    featuredGrid.appendChild(card);
-  });
+    const countAll = document.getElementById('countAll');
+    const countManager = document.getElementById('countManager');
+    const countMember = document.getElementById('countMember');
+    if (countAll) countAll.textContent = total;
+    if (countManager) countManager.textContent = managers;
+    if (countMember) countMember.textContent = memberOnly;
+  }
 
-  // ===== MEMBERS GRID =====
-  const membersGrid = document.getElementById('membersGrid');
-  const searchInput = document.getElementById('memberSearch');
-  const searchClear = document.getElementById('searchClear');
-  const filterBtns = document.querySelectorAll('.filter-btn');
-  const noResults = document.getElementById('noResults');
+  updateStatsAndCounters(true);
 
-  let currentFilter = 'all';
-
+  // ===== HELPER FUNCTIONS =====
   function getDisplayName(member) {
     return member.fullName || member.name;
   }
 
   function getInitials(member) {
     const name = member.fullName || member.name;
-    const parts = name.replace(/[_.]/g, ' ').split(/\s+/);
+    const parts = name.replace(/[_.]/g, ' ').split(/\s+/).filter(Boolean);
     if (parts.length >= 2) {
       return (parts[0][0] + parts[1][0]).toUpperCase();
     }
@@ -143,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function getUsername(link) {
-    const match = link.match(/instagram\.com\/([^/]+)/);
+    const match = (link || '').match(/instagram\.com\/([^/]+)/);
     return match ? '@' + match[1] : '';
   }
 
@@ -156,9 +149,81 @@ document.addEventListener('DOMContentLoaded', () => {
     return `<div class="${cssClass}" style="width:${size}px;height:${size}px;min-width:${size}px">${initials}</div>`;
   }
 
+  // ===== SCROLL REVEAL OBSERVER =====
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+  // ===== FEATURED MEMBERS (YÖNETİM) =====
+  const featuredGrid = document.getElementById('featuredGrid');
+
+  function renderFeaturedMembers() {
+    if (!featuredGrid) return;
+    featuredGrid.innerHTML = '';
+    const all = getAllMembers();
+    const managerMembers = all.filter(m => NON_MEMBER_ROLES.has(m.role))
+      .sort((a, b) => {
+        const rDiff = (ROLE_ORDER[a.role] ?? 99) - (ROLE_ORDER[b.role] ?? 99);
+        if (rDiff !== 0) return rDiff;
+        return getDisplayName(a).localeCompare(getDisplayName(b), 'tr', { sensitivity: 'base' });
+      });
+
+    managerMembers.forEach(member => {
+      const card = document.createElement('div');
+      card.classList.add('featured-card', 'reveal');
+
+      const cityHtml = member.city ? `
+        <div class="featured-city">
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"></path>
+            <circle cx="12" cy="9" r="2.5"></circle>
+          </svg>
+          <span>${member.city}</span>
+        </div>` : '';
+
+      card.innerHTML = `
+        ${avatarHTML(member, 'featured-avatar', 80)}
+        <div class="featured-name">${getDisplayName(member)}</div>
+        <div class="featured-role">${member.role.toUpperCase()}</div>
+        ${cityHtml}
+        <a href="${member.link}" target="_blank" rel="noopener" class="featured-link" onclick="event.stopPropagation()">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="2" width="20" height="20" rx="5"></rect>
+            <circle cx="12" cy="12" r="5"></circle>
+            <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"></circle>
+          </svg>
+          Profili Görüntüle
+        </a>
+      `;
+      card.addEventListener('click', () => openMemberModal(member));
+      featuredGrid.appendChild(card);
+    });
+
+    featuredGrid.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+  }
+
+  renderFeaturedMembers();
+
+  // ===== MEMBERS GRID =====
+  const membersGrid = document.getElementById('membersGrid');
+  const searchInput = document.getElementById('memberSearch');
+  const searchClear = document.getElementById('searchClear');
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const noResults = document.getElementById('noResults');
+
+  let currentFilter = 'all';
+
   function renderMembers(filter, search) {
+    if (!membersGrid) return;
     membersGrid.innerHTML = '';
-    let filteredMembers = MEMBERS;
+    let filteredMembers = getAllMembers();
 
     if (filter && filter !== 'all') {
       if (filter === 'yonetim') {
@@ -169,43 +234,57 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (search) {
-      const q = search.toLowerCase();
+      const q = search.toLowerCase().trim();
       filteredMembers = filteredMembers.filter(m =>
         m.name.toLowerCase().includes(q) ||
         (m.fullName && m.fullName.toLowerCase().includes(q)) ||
         m.role.toLowerCase().includes(q) ||
+        (m.city && m.city.toLowerCase().includes(q)) ||
         m.link.toLowerCase().includes(q)
       );
     }
 
-    const roleOrder = ROLE_ORDER;
     filteredMembers = [...filteredMembers].sort((a, b) => {
-      const rDiff = (roleOrder[a.role] ?? 99) - (roleOrder[b.role] ?? 99);
+      const rDiff = (ROLE_ORDER[a.role] ?? 99) - (ROLE_ORDER[b.role] ?? 99);
       if (rDiff !== 0) return rDiff;
       return getDisplayName(a).localeCompare(getDisplayName(b), 'tr', { sensitivity: 'base' });
     });
 
     if (filteredMembers.length === 0) {
-      noResults.classList.add('visible');
+      if (noResults) noResults.classList.add('visible');
     } else {
-      noResults.classList.remove('visible');
+      if (noResults) noResults.classList.remove('visible');
     }
 
     filteredMembers.forEach((member, i) => {
       const username = getUsername(member.link);
       const isManager = NON_MEMBER_ROLES.has(member.role);
       const avatarClass = isManager ? 'member-avatar manager-avatar' : 'member-avatar member-avatar-blue';
+      const roleBadgeClass = member.role === 'Yönetim Kurulu Adayı'
+        ? 'role-candidate'
+        : (isManager ? 'role-manager' : 'role-member');
+
+      const cityHtml = member.city ? `
+        <div class="member-city">
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"></path>
+            <circle cx="12" cy="9" r="2.5"></circle>
+          </svg>
+          <span>${member.city}</span>
+        </div>` : '';
+
       const card = document.createElement('div');
       card.classList.add('member-card');
-      card.style.animationDelay = (i * 0.05) + 's';
+      card.style.animationDelay = (i * 0.04) + 's';
       card.innerHTML = `
         <div class="member-card-top">
           ${avatarHTML(member, avatarClass, 56)}
           <div class="member-info">
             <div class="member-name">${getDisplayName(member)}</div>
-            <span class="member-role ${isManager ? 'role-manager' : 'role-member'}">
+            <span class="member-role ${roleBadgeClass}">
               ${member.role}
             </span>
+            ${cityHtml}
           </div>
         </div>
         <div class="member-card-actions">
@@ -227,26 +306,32 @@ document.addEventListener('DOMContentLoaded', () => {
   renderMembers('all', '');
 
   // Search
-  searchInput.addEventListener('input', (e) => {
-    const val = e.target.value;
-    searchClear.classList.toggle('visible', val.length > 0);
-    renderMembers(currentFilter, val);
-  });
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      const val = e.target.value;
+      if (searchClear) searchClear.classList.toggle('visible', val.length > 0);
+      renderMembers(currentFilter, val);
+    });
+  }
 
-  searchClear.addEventListener('click', () => {
-    searchInput.value = '';
-    searchClear.classList.remove('visible');
-    renderMembers(currentFilter, '');
-    searchInput.focus();
-  });
+  if (searchClear) {
+    searchClear.addEventListener('click', () => {
+      if (searchInput) {
+        searchInput.value = '';
+        searchInput.focus();
+      }
+      searchClear.classList.remove('visible');
+      renderMembers(currentFilter, '');
+    });
+  }
 
-  // Filter
+  // Filter buttons
   filterBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       filterBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       currentFilter = btn.dataset.filter;
-      renderMembers(currentFilter, searchInput.value);
+      renderMembers(currentFilter, searchInput ? searchInput.value : '');
     });
   });
 
@@ -255,9 +340,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const modalBody = document.getElementById('modalBody');
 
   function openMemberModal(member) {
+    if (!modal || !modalBody) return;
     const isManager = NON_MEMBER_ROLES.has(member.role);
     const username = getUsername(member.link);
     const modalAvatarClass = isManager ? 'modal-avatar mgr' : 'modal-avatar mbr';
+    const roleBadgeClass = member.role === 'Yönetim Kurulu Adayı'
+      ? 'role-candidate'
+      : (isManager ? 'role-manager' : 'role-member');
+
     const fullNameRow = member.fullName ? `
         <div class="modal-detail">
           <div class="modal-detail-icon">&#128100;</div>
@@ -266,6 +356,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="modal-detail-value">${member.fullName}</div>
           </div>
         </div>` : '';
+
     const cityRow = member.city ? `
         <div class="modal-detail">
           <div class="modal-detail-icon">&#128205;</div>
@@ -279,7 +370,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="modal-header">
         ${avatarHTML(member, modalAvatarClass, 100)}
         <div class="modal-name">${getDisplayName(member)}</div>
-        <span class="modal-role-badge ${isManager ? 'role-manager' : 'role-member'}">
+        <span class="modal-role-badge ${roleBadgeClass}">
           ${member.role}
         </span>
       </div>
@@ -289,7 +380,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="modal-detail-icon">&#128100;</div>
           <div class="modal-detail-text">
             <div class="modal-detail-label">Kullanıcı Adı</div>
-            <div class="modal-detail-value">${member.name}</div>
+            <div class="modal-detail-value">${member.name || username}</div>
           </div>
         </div>
         <div class="modal-detail">
@@ -331,11 +422,15 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.style.overflow = 'hidden';
   }
 
-  modal.querySelector('.modal-close').addEventListener('click', closeModal);
-  modal.querySelector('.modal-backdrop').addEventListener('click', closeModal);
+  if (modal) {
+    const closeBtn = modal.querySelector('.modal-close');
+    const backdrop = modal.querySelector('.modal-backdrop');
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    if (backdrop) backdrop.addEventListener('click', closeModal);
+  }
 
   function closeModal() {
-    modal.classList.remove('active');
+    if (modal) modal.classList.remove('active');
     document.body.style.overflow = '';
   }
 
@@ -345,18 +440,6 @@ document.addEventListener('DOMContentLoaded', () => {
       closeLightbox();
     }
   });
-
-  // ===== SCROLL REVEAL (must be defined before gallery render) =====
-  const revealObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        revealObserver.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
-
-  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
   // ===== GALLERY DATA =====
   const GALLERY_PHOTOS = [
@@ -420,6 +503,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const galleryGrid = document.getElementById('galleryGrid');
 
   function renderGallery(filter) {
+    if (!galleryGrid) return;
     galleryGrid.innerHTML = '';
     const filtered = filter === 'all'
       ? GALLERY_PHOTOS
@@ -442,7 +526,6 @@ document.addEventListener('DOMContentLoaded', () => {
       galleryGrid.appendChild(item);
     });
 
-    // Observe new items for scroll reveal
     galleryGrid.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
   }
 
@@ -465,26 +548,27 @@ document.addEventListener('DOMContentLoaded', () => {
   const lightboxInfo = document.getElementById('lightboxInfo');
 
   function openLightbox(photo) {
+    if (!lightbox || !lightboxImg || !lightboxInfo) return;
     lightboxImg.innerHTML = `<img src="${photo.file}" alt="${photo.airline} ${photo.model}">`;
     lightboxInfo.textContent = `${photo.model} — ${photo.airline}`;
     lightbox.classList.add('active');
     document.body.style.overflow = 'hidden';
   }
 
-  lightbox.querySelector('.lightbox-close').addEventListener('click', closeLightbox);
-  lightbox.addEventListener('click', (e) => {
-    if (e.target === lightbox || !lightbox.querySelector('.lightbox-content').contains(e.target)) {
-      closeLightbox();
-    }
-  });
+  if (lightbox) {
+    const lbClose = lightbox.querySelector('.lightbox-close');
+    if (lbClose) lbClose.addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox || !lightbox.querySelector('.lightbox-content').contains(e.target)) {
+        closeLightbox();
+      }
+    });
+  }
 
   function closeLightbox() {
-    lightbox.classList.remove('active');
-    if (!modal.classList.contains('active')) {
+    if (lightbox) lightbox.classList.remove('active');
+    if (modal && !modal.classList.contains('active')) {
       document.body.style.overflow = '';
     }
   }
-
-  // Re-observe featured cards after they're rendered
-  document.querySelectorAll('.featured-card.reveal').forEach(el => revealObserver.observe(el));
 });
