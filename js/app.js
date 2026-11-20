@@ -7,25 +7,29 @@ document.addEventListener('DOMContentLoaded', () => {
   const navLinks = document.querySelectorAll('.nav-link');
 
   window.addEventListener('scroll', () => {
-    navbar.classList.toggle('scrolled', window.scrollY > 50);
+    if (navbar) {
+      navbar.classList.toggle('scrolled', window.scrollY > 40);
+    }
   });
 
-  navToggle.addEventListener('click', () => {
-    navToggle.classList.toggle('active');
-    navMenu.classList.toggle('active');
-  });
-
-  navLinks.forEach(link => {
-    link.addEventListener('click', () => {
-      navToggle.classList.remove('active');
-      navMenu.classList.remove('active');
+  if (navToggle && navMenu) {
+    navToggle.addEventListener('click', () => {
+      navToggle.classList.toggle('active');
+      navMenu.classList.toggle('active');
     });
-  });
+
+    navLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        navToggle.classList.remove('active');
+        navMenu.classList.remove('active');
+      });
+    });
+  }
 
   // Active nav link on scroll
   const sections = document.querySelectorAll('section[id]');
   window.addEventListener('scroll', () => {
-    const scrollY = window.scrollY + 100;
+    const scrollY = window.scrollY + 120;
     sections.forEach(section => {
       const top = section.offsetTop;
       const height = section.offsetHeight;
@@ -37,16 +41,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // ===== PARTICLES =====
+  // ===== PARTICLES BACKGROUND =====
   const particlesContainer = document.getElementById('heroParticles');
   if (particlesContainer) {
-    for (let i = 0; i < 30; i++) {
+    particlesContainer.innerHTML = '';
+    for (let i = 0; i < 35; i++) {
       const particle = document.createElement('div');
       particle.classList.add('particle');
       particle.style.left = Math.random() * 100 + '%';
-      particle.style.width = particle.style.height = (Math.random() * 3 + 1) + 'px';
-      particle.style.animationDuration = (Math.random() * 15 + 10) + 's';
-      particle.style.animationDelay = (Math.random() * 10) + 's';
+      particle.style.width = particle.style.height = (Math.random() * 3 + 1.5) + 'px';
+      particle.style.animationDuration = (Math.random() * 14 + 10) + 's';
+      particle.style.animationDelay = (Math.random() * 8) + 's';
       particlesContainer.appendChild(particle);
     }
   }
@@ -61,6 +66,39 @@ document.addEventListener('DOMContentLoaded', () => {
     'Üye':                    5
   };
 
+  const ROLE_META = {
+    'Ekip Başkanı': {
+      icon: '👑',
+      badgeClass: 'role-president',
+      title: 'Ekip Başkanı'
+    },
+    'Ekip Başkan Yardımcısı': {
+      icon: '⭐',
+      badgeClass: 'role-vice-president',
+      title: 'Ekip Başkan Yardımcısı'
+    },
+    'Kıdemli Yönetim Kurulu': {
+      icon: '🛡️',
+      badgeClass: 'role-senior-board',
+      title: 'Kıdemli Yönetim Kurulu'
+    },
+    'Yönetim Kurulu': {
+      icon: '✈️',
+      badgeClass: 'role-board',
+      title: 'Yönetim Kurulu'
+    },
+    'Yönetim Kurulu Adayı': {
+      icon: '⚡',
+      badgeClass: 'role-candidate',
+      title: 'Yönetim Kurulu Adayı'
+    },
+    'Üye': {
+      icon: '📷',
+      badgeClass: 'role-member',
+      title: 'Spotter'
+    }
+  };
+
   const NON_MEMBER_ROLES = new Set([
     'Ekip Başkanı',
     'Ekip Başkan Yardımcısı',
@@ -69,9 +107,81 @@ document.addEventListener('DOMContentLoaded', () => {
     'Yönetim Kurulu Adayı'
   ]);
 
-  // ===== MEMBER DATA (Static from members-data.js) =====
+  // ===== MEMBER DATA STATE =====
+  // Default to static MEMBERS loaded from members-data.js (robust offline / file:// support)
+  let currentMembersList = typeof MEMBERS !== 'undefined' ? [...MEMBERS] : [];
+
   function getAllMembers() {
-    return typeof MEMBERS !== 'undefined' ? [...MEMBERS] : [];
+    return currentMembersList;
+  }
+
+  // ===== TRY DYNAMIC LOAD FROM EXCEL (if running on HTTP/HTTPS server) =====
+  async function tryLoadFromExcel() {
+    if (typeof XLSX === 'undefined') return;
+    try {
+      const res = await fetch('üyeller.xlsx', { cache: 'no-cache' });
+      if (!res.ok) return;
+      const arrayBuffer = await res.arrayBuffer();
+      const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+      const firstSheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[firstSheetName];
+      const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+      if (!jsonData || jsonData.length <= 1) return;
+
+      const knownPhotos = {
+        'spoterkrinco': 'img/members/Emir Ali Aydar.jpg',
+        'cinarspotting': 'img/members/Çağan Çınar.jpg',
+        'spotter_ruzgar': 'img/members/Rüzgar Büyükyenigün.jpg',
+        'emrespotter': 'img/members/Emre Bıyık.jpg',
+        'ltauspotter': 'img/members/Ltau Spoter.jpg',
+        'spotterahmet58': 'img/members/Ahmet güney üzüm.jpg',
+        'spotter_taha1': 'img/members/Taha ARslan.jpg',
+        'memospotting': 'img/members/Mehmet Küçükalemdar.jpg',
+        'spotter_keremm': 'img/members/Ali Kerem Öztürk.jpg'
+      };
+
+      const parsed = [];
+      for (let i = 1; i < jsonData.length; i++) {
+        const row = jsonData[i];
+        if (!row || !row[0]) continue;
+        const link = String(row[0] || '').trim();
+        const role = String(row[1] || 'Üye').trim();
+        let fullName = String(row[2] || '').trim();
+        const city = String(row[3] || '').trim();
+
+        let username = link;
+        if (link.includes('instagram.com/')) {
+          username = link.split('instagram.com/')[1].split('/')[0].split('?')[0];
+        }
+
+        if (username === 'memospotting' && (!fullName || fullName === 'memospotting')) {
+          fullName = 'Mehmet Küçükalemdar';
+        } else if (username === 'spotter_keremm' && !fullName) {
+          fullName = 'Ali Kerem Öztürk';
+        }
+
+        const photo = knownPhotos[username] || '';
+
+        parsed.push({
+          name: username,
+          fullName: fullName,
+          city: city,
+          role: role,
+          link: link,
+          photo: photo
+        });
+      }
+
+      if (parsed.length > 0) {
+        currentMembersList = parsed;
+        console.log(`[AST] Excel (üyeller.xlsx) güncel verileri başarıyla yüklendi: ${parsed.length} üye.`);
+        updateStatsAndCounters(false);
+        renderFeaturedMembers();
+        renderMembers(currentFilter, searchInput ? searchInput.value : '');
+      }
+    } catch (e) {
+      // Offline or CORS restricted — static MEMBERS is already serving
+    }
   }
 
   // ===== COUNTER ANIMATION & STATS =====
@@ -101,9 +211,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (animate) {
       setTimeout(() => {
-        animateCounter(memberCountEl, total, 1500);
-        animateCounter(managerCountEl, managers, 1500);
-      }, 500);
+        animateCounter(memberCountEl, total, 1400);
+        animateCounter(managerCountEl, managers, 1400);
+      }, 400);
     } else {
       if (memberCountEl) memberCountEl.textContent = total;
       if (managerCountEl) managerCountEl.textContent = managers;
@@ -126,27 +236,57 @@ document.addEventListener('DOMContentLoaded', () => {
     return member.fullName || member.name;
   }
 
-  function getInitials(member) {
-    const name = member.fullName || member.name;
-    const parts = name.replace(/[_.]/g, ' ').split(/\s+/).filter(Boolean);
-    if (parts.length >= 2) {
-      return (parts[0][0] + parts[1][0]).toUpperCase();
+  function getUsername(link, fallbackName) {
+    if (fallbackName && !fallbackName.startsWith('http')) {
+      return '@' + fallbackName;
     }
-    return name.substring(0, 2).toUpperCase();
-  }
-
-  function getUsername(link) {
     const match = (link || '').match(/instagram\.com\/([^/]+)/);
     return match ? '@' + match[1] : '';
   }
 
-  function avatarHTML(member, cssClass, size) {
-    const initials = getInitials(member);
-    const displayName = getDisplayName(member);
-    if (member.photo) {
-      return `<div class="${cssClass} has-photo" style="width:${size}px;height:${size}px;min-width:${size}px"><img src="${member.photo}" alt="${displayName}" onerror="this.parentElement.innerHTML='${initials}';this.parentElement.classList.remove('has-photo')"></div>`;
+  function getCleanHandle(member) {
+    if (member.name) return member.name;
+    const match = (member.link || '').match(/instagram\.com\/([^/]+)/);
+    return match ? match[1] : '';
+  }
+
+  function formatLocationHTML(cityStr) {
+    if (!cityStr) return '';
+    if (cityStr.includes('/')) {
+      const parts = cityStr.split('/');
+      const city = parts[0].trim();
+      const icao = parts[1].trim();
+      return `
+        <div class="member-location">
+          <span class="icao-badge">${icao}</span>
+          <span class="city-name">${city}</span>
+        </div>
+      `;
     }
-    return `<div class="${cssClass}" style="width:${size}px;height:${size}px;min-width:${size}px">${initials}</div>`;
+    return `
+      <div class="member-location">
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"></path>
+          <circle cx="12" cy="9" r="2.5"></circle>
+        </svg>
+        <span class="city-name">${cityStr}</span>
+      </div>
+    `;
+  }
+
+  function avatarHTML(member, cssClass, size) {
+    const displayName = getDisplayName(member);
+    const hasPhoto = Boolean(member.photo);
+    const photoSrc = hasPhoto ? member.photo : 'img/default-avatar.svg';
+    const isManager = NON_MEMBER_ROLES.has(member.role);
+    const roleBorderClass = isManager ? 'avatar-mgr' : 'avatar-mbr';
+    const defaultClass = !hasPhoto ? 'is-default-avatar' : 'has-custom-photo';
+
+    return `
+      <div class="${cssClass} ${roleBorderClass} ${defaultClass}" style="width:${size}px;height:${size}px;min-width:${size}px">
+        <img src="${photoSrc}" alt="${displayName}" loading="lazy" onerror="this.onerror=null;this.src='img/default-avatar.svg';this.parentElement.classList.add('is-default-avatar');">
+      </div>
+    `;
   }
 
   // ===== SCROLL REVEAL OBSERVER =====
@@ -157,11 +297,11 @@ document.addEventListener('DOMContentLoaded', () => {
         revealObserver.unobserve(entry.target);
       }
     });
-  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
 
   document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
-  // ===== FEATURED MEMBERS (YÖNETİM) =====
+  // ===== FEATURED MEMBERS (YÖNETİM KADROSU) =====
   const featuredGrid = document.getElementById('featuredGrid');
 
   function renderFeaturedMembers() {
@@ -179,28 +319,34 @@ document.addEventListener('DOMContentLoaded', () => {
       const card = document.createElement('div');
       card.classList.add('featured-card', 'reveal');
 
-      const cityHtml = member.city ? `
-        <div class="featured-city">
-          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"></path>
-            <circle cx="12" cy="9" r="2.5"></circle>
-          </svg>
-          <span>${member.city}</span>
-        </div>` : '';
+      const meta = ROLE_META[member.role] || { icon: '✈️', badgeClass: 'role-manager' };
+      const handle = getCleanHandle(member);
+      const isNamed = Boolean(member.fullName);
 
       card.innerHTML = `
-        ${avatarHTML(member, 'featured-avatar', 80)}
-        <div class="featured-name">${getDisplayName(member)}</div>
-        <div class="featured-role">${member.role.toUpperCase()}</div>
-        ${cityHtml}
-        <a href="${member.link}" target="_blank" rel="noopener" class="featured-link" onclick="event.stopPropagation()">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="2" y="2" width="20" height="20" rx="5"></rect>
-            <circle cx="12" cy="12" r="5"></circle>
-            <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"></circle>
-          </svg>
-          Profili Görüntüle
-        </a>
+        <div class="featured-badge ${meta.badgeClass}">
+          <span class="badge-icon">${meta.icon}</span>
+          <span>${member.role.toUpperCase()}</span>
+        </div>
+        <div class="featured-avatar-wrap">
+          ${avatarHTML(member, 'featured-avatar', 92)}
+        </div>
+        <div class="featured-info">
+          <div class="featured-name">${getDisplayName(member)}</div>
+          ${isNamed ? `<div class="featured-handle">@${handle}</div>` : ''}
+          ${formatLocationHTML(member.city)}
+        </div>
+        <div class="featured-actions">
+          <a href="${member.link}" target="_blank" rel="noopener" class="featured-ig-btn" onclick="event.stopPropagation()">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="2" width="20" height="20" rx="5"></rect>
+              <circle cx="12" cy="12" r="5"></circle>
+              <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"></circle>
+            </svg>
+            <span>Instagram'da Takip Et</span>
+            <span class="btn-arrow">&#8599;</span>
+          </a>
+        </div>
       `;
       card.addEventListener('click', () => openMemberModal(member));
       featuredGrid.appendChild(card);
@@ -236,11 +382,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (search) {
       const q = search.toLowerCase().trim();
       filteredMembers = filteredMembers.filter(m =>
-        m.name.toLowerCase().includes(q) ||
+        (m.name && m.name.toLowerCase().includes(q)) ||
         (m.fullName && m.fullName.toLowerCase().includes(q)) ||
-        m.role.toLowerCase().includes(q) ||
+        (m.role && m.role.toLowerCase().includes(q)) ||
         (m.city && m.city.toLowerCase().includes(q)) ||
-        m.link.toLowerCase().includes(q)
+        (m.link && m.link.toLowerCase().includes(q))
       );
     }
 
@@ -257,44 +403,45 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     filteredMembers.forEach((member, i) => {
-      const username = getUsername(member.link);
-      const isManager = NON_MEMBER_ROLES.has(member.role);
-      const avatarClass = isManager ? 'member-avatar manager-avatar' : 'member-avatar member-avatar-blue';
-      const roleBadgeClass = member.role === 'Yönetim Kurulu Adayı'
-        ? 'role-candidate'
-        : (isManager ? 'role-manager' : 'role-member');
-
-      const cityHtml = member.city ? `
-        <div class="member-city">
-          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"></path>
-            <circle cx="12" cy="9" r="2.5"></circle>
-          </svg>
-          <span>${member.city}</span>
-        </div>` : '';
+      const handle = getCleanHandle(member);
+      const isNamed = Boolean(member.fullName);
+      const meta = ROLE_META[member.role] || { icon: '📷', badgeClass: 'role-member' };
 
       const card = document.createElement('div');
       card.classList.add('member-card');
-      card.style.animationDelay = (i * 0.04) + 's';
+      card.style.animationDelay = (i * 0.03) + 's';
+
       card.innerHTML = `
-        <div class="member-card-top">
-          ${avatarHTML(member, avatarClass, 56)}
-          <div class="member-info">
-            <div class="member-name">${getDisplayName(member)}</div>
-            <span class="member-role ${roleBadgeClass}">
-              ${member.role}
-            </span>
-            ${cityHtml}
+        <div class="member-card-header">
+          <div class="member-avatar-box">
+            ${avatarHTML(member, 'member-avatar', 66)}
+          </div>
+          <div class="member-primary">
+            <div class="member-title-row">
+              <span class="member-card-name" title="${getDisplayName(member)}">${getDisplayName(member)}</span>
+            </div>
+            ${isNamed ? `<div class="member-card-handle">@${handle}</div>` : ''}
+            <div class="member-badge-row">
+              <span class="member-role-badge ${meta.badgeClass}">
+                <span class="role-icon">${meta.icon}</span> ${member.role}
+              </span>
+            </div>
           </div>
         </div>
+
+        <div class="member-card-details">
+          ${formatLocationHTML(member.city)}
+        </div>
+
         <div class="member-card-actions">
-          <a href="${member.link}" target="_blank" rel="noopener" class="member-profile-link" onclick="event.stopPropagation()">
+          <a href="${member.link}" target="_blank" rel="noopener" class="member-profile-btn" onclick="event.stopPropagation()">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="2" y="2" width="20" height="20" rx="5"></rect>
               <circle cx="12" cy="12" r="5"></circle>
               <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"></circle>
             </svg>
-            ${username}
+            <span class="btn-text">@${handle}</span>
+            <span class="arrow-sym">&#8599;</span>
           </a>
         </div>
       `;
@@ -341,79 +488,65 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function openMemberModal(member) {
     if (!modal || !modalBody) return;
-    const isManager = NON_MEMBER_ROLES.has(member.role);
-    const username = getUsername(member.link);
-    const modalAvatarClass = isManager ? 'modal-avatar mgr' : 'modal-avatar mbr';
-    const roleBadgeClass = member.role === 'Yönetim Kurulu Adayı'
-      ? 'role-candidate'
-      : (isManager ? 'role-manager' : 'role-member');
+    const handle = getCleanHandle(member);
+    const meta = ROLE_META[member.role] || { icon: '📷', badgeClass: 'role-member' };
 
     const fullNameRow = member.fullName ? `
-        <div class="modal-detail">
-          <div class="modal-detail-icon">&#128100;</div>
-          <div class="modal-detail-text">
-            <div class="modal-detail-label">İsim Soyisim</div>
-            <div class="modal-detail-value">${member.fullName}</div>
-          </div>
-        </div>` : '';
+      <div class="modal-detail">
+        <div class="modal-detail-icon">&#128100;</div>
+        <div class="modal-detail-text">
+          <div class="modal-detail-label">İsim Soyisim</div>
+          <div class="modal-detail-value">${member.fullName}</div>
+        </div>
+      </div>` : '';
 
     const cityRow = member.city ? `
-        <div class="modal-detail">
-          <div class="modal-detail-icon">&#128205;</div>
-          <div class="modal-detail-text">
-            <div class="modal-detail-label">Şehir / Havalimanı</div>
-            <div class="modal-detail-value">${member.city}</div>
-          </div>
-        </div>` : '';
+      <div class="modal-detail">
+        <div class="modal-detail-icon">&#128205;</div>
+        <div class="modal-detail-text">
+          <div class="modal-detail-label">Şehir & Havalimanı (ICAO)</div>
+          <div class="modal-detail-value">${member.city}</div>
+        </div>
+      </div>` : '';
 
     modalBody.innerHTML = `
       <div class="modal-header">
-        ${avatarHTML(member, modalAvatarClass, 100)}
+        <div class="modal-avatar-container">
+          ${avatarHTML(member, 'modal-avatar', 110)}
+        </div>
         <div class="modal-name">${getDisplayName(member)}</div>
-        <span class="modal-role-badge ${roleBadgeClass}">
-          ${member.role}
-        </span>
+        <div class="modal-handle">@${handle}</div>
+        <div class="modal-badge-wrap">
+          <span class="modal-role-badge ${meta.badgeClass}">
+            <span class="role-icon">${meta.icon}</span> ${member.role}
+          </span>
+        </div>
       </div>
       <div class="modal-body-content">
         ${fullNameRow}
         <div class="modal-detail">
-          <div class="modal-detail-icon">&#128100;</div>
+          <div class="modal-detail-icon">&#128247;</div>
           <div class="modal-detail-text">
-            <div class="modal-detail-label">Kullanıcı Adı</div>
-            <div class="modal-detail-value">${member.name || username}</div>
+            <div class="modal-detail-label">Instagram Kullanıcı Adı</div>
+            <div class="modal-detail-value">@${handle}</div>
           </div>
         </div>
         <div class="modal-detail">
           <div class="modal-detail-icon">&#127942;</div>
           <div class="modal-detail-text">
-            <div class="modal-detail-label">Mevki</div>
+            <div class="modal-detail-label">Ekip Görevi</div>
             <div class="modal-detail-value">${member.role}</div>
           </div>
         </div>
         ${cityRow}
-        <div class="modal-detail">
-          <div class="modal-detail-icon">
+        <div class="modal-action">
+          <a href="${member.link}" target="_blank" rel="noopener" class="btn btn-primary modal-btn">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="2" y="2" width="20" height="20" rx="5"></rect>
               <circle cx="12" cy="12" r="5"></circle>
               <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"></circle>
             </svg>
-          </div>
-          <div class="modal-detail-text">
-            <div class="modal-detail-label">Instagram</div>
-            <div class="modal-detail-value">
-              <a href="${member.link}" target="_blank" rel="noopener">${username}</a>
-            </div>
-          </div>
-        </div>
-        <div class="modal-action">
-          <a href="${member.link}" target="_blank" rel="noopener" class="btn btn-primary">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="2" y="2" width="20" height="20" rx="5"></rect>
-              <circle cx="12" cy="12" r="5"></circle>
-              <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"></circle>
-            </svg>
-            Instagram Profilini Ziyaret Et
+            Instagram Profilini Görüntüle &#8599;
           </a>
         </div>
       </div>
@@ -441,61 +574,98 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // ===== GALLERY DATA =====
+  // ===== GALLERY DATA (All 13 project spotting photos) =====
   const GALLERY_PHOTOS = [
     {
       file: 'img/a350.jpg',
       airline: 'Turkish Airlines',
       model: 'Airbus A350-900',
-      category: 'commercial'
+      category: 'commercial',
+      desc: 'İstanbul Havalimanı (LTFM)'
     },
     {
       file: 'img/THY 777.jpg',
       airline: 'Turkish Airlines',
-      model: 'Boeing 777',
-      category: 'commercial'
+      model: 'Boeing 777-300ER',
+      category: 'commercial',
+      desc: 'İstanbul Havalimanı (LTFM)'
     },
     {
       file: 'img/A320 Neo pegasus.jpg',
       airline: 'Pegasus Airlines',
       model: 'Airbus A320neo',
-      category: 'commercial'
+      category: 'commercial',
+      desc: 'Sabiha Gökçen Havalimanı (LTFJ)'
+    },
+    {
+      file: 'img/Pegasus A320 NEO.jpg',
+      airline: 'Pegasus Airlines',
+      model: 'Airbus A320neo (TC-NCJ)',
+      category: 'commercial',
+      desc: 'Short Final Yaklaşması'
+    },
+    {
+      file: 'img/Ajet 737 Max 8.jpg',
+      airline: 'AJet',
+      model: 'Boeing 737 MAX 8',
+      category: 'commercial',
+      desc: 'Yeni Filo Renkleri'
     },
     {
       file: 'img/Ajet A321 Neo.jpg',
       airline: 'AJet',
       model: 'Airbus A321neo',
-      category: 'commercial'
+      category: 'commercial',
+      desc: 'Pist Başı Tırmanış'
     },
     {
       file: 'img/Ajet Boeing 737-800.jpg',
       airline: 'AJet',
       model: 'Boeing 737-800',
-      category: 'commercial'
+      category: 'commercial',
+      desc: 'İniş Hattı'
     },
     {
-      file: 'img/Türk Yıldızları.jpg',
-      airline: 'Türk Hava Kuvvetleri',
-      model: 'Türk Yıldızları',
-      category: 'military'
-    },
-    {
-      file: 'img/Solotürk.jpg',
-      airline: 'Türk Hava Kuvvetleri',
-      model: 'SoloTürk — F-16',
-      category: 'military'
-    },
-    {
-      file: 'img/TC-HGE ambulans helikopter.jpg',
-      airline: 'TC-HGE',
-      model: 'Ambulans Helikopter',
-      category: 'general'
+      file: 'img/indeniosa a340.jpg.jpeg',
+      airline: 'Hi Fly / Garuda Indonesia',
+      model: 'Airbus A340-300',
+      category: 'commercial',
+      desc: 'Dört Motorlu Efsane'
     },
     {
       file: 'img/İran airtour A320-200.jpg',
       airline: 'Iran Air Tour',
       model: 'Airbus A320-200',
-      category: 'commercial'
+      category: 'commercial',
+      desc: 'Uluslararası Sefer'
+    },
+    {
+      file: 'img/Solotürk.jpg',
+      airline: 'Türk Hava Kuvvetleri',
+      model: 'F-16C Blok 30 SoloTürk',
+      category: 'military',
+      desc: 'Akrobasi Uçuşu'
+    },
+    {
+      file: 'img/Türk Yıldızları.jpg',
+      airline: 'Türk Hava Kuvvetleri',
+      model: 'NF-5A/B Türk Yıldızları',
+      category: 'military',
+      desc: 'Milli Gururumuz'
+    },
+    {
+      file: 'img/A400 Atlas.jpg',
+      airline: 'Türk Hava Kuvvetleri',
+      model: 'Airbus A400M Atlas',
+      category: 'military',
+      desc: 'Stratejik Askeri Nakliye'
+    },
+    {
+      file: 'img/TC-HGE ambulans helikopter.jpg',
+      airline: 'T.C. Sağlık Bakanlığı',
+      model: 'EC-135 Ambulans Helikopter',
+      category: 'general',
+      desc: 'TC-HGE Acil Havacılık'
     }
   ];
 
@@ -516,10 +686,14 @@ document.addEventListener('DOMContentLoaded', () => {
       item.innerHTML = `
         <div class="gallery-img">
           <img src="${photo.file}" alt="${photo.airline} ${photo.model}" loading="lazy">
+          <div class="gallery-hover-overlay">
+            <span class="gallery-zoom-icon">&#128269;</span>
+          </div>
         </div>
         <div class="gallery-info">
           <h4>${photo.model}</h4>
-          <p>${photo.airline}</p>
+          <p class="gallery-airline">${photo.airline}</p>
+          <span class="gallery-badge">${photo.desc || ''}</span>
         </div>
       `;
       item.addEventListener('click', () => openLightbox(photo));
@@ -550,7 +724,10 @@ document.addEventListener('DOMContentLoaded', () => {
   function openLightbox(photo) {
     if (!lightbox || !lightboxImg || !lightboxInfo) return;
     lightboxImg.innerHTML = `<img src="${photo.file}" alt="${photo.airline} ${photo.model}">`;
-    lightboxInfo.textContent = `${photo.model} — ${photo.airline}`;
+    lightboxInfo.innerHTML = `
+      <h3>${photo.model}</h3>
+      <p>${photo.airline} &bull; ${photo.desc || ''}</p>
+    `;
     lightbox.classList.add('active');
     document.body.style.overflow = 'hidden';
   }
@@ -571,4 +748,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.body.style.overflow = '';
     }
   }
+
+  // Attempt dynamic load from Excel if supported
+  tryLoadFromExcel();
 });

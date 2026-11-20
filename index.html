@@ -26,6 +26,7 @@
       <ul class="nav-menu" id="navMenu">
         <li><a href="#hero" class="nav-link active">Ana Sayfa</a></li>
         <li><a href="#about" class="nav-link">Hakkımızda</a></li>
+        <li><a href="#management" class="nav-link">Yönetim</a></li>
         <li><a href="#members" class="nav-link">Üyelerimiz</a></li>
         <li><a href="#gallery" class="nav-link">Galeri</a></li>
         <li><a href="#contact" class="nav-link">İletişim</a></li>
@@ -113,13 +114,13 @@
   </section>
 
   <!-- FEATURED MEMBERS -->
-  <section class="section featured-section">
+  <section class="section featured-section" id="management">
     <div class="container">
       <div class="section-header">
-        <span class="section-tag">Yönetim</span>
-        <h2 class="section-title">Öne Çıkan Üyeler</h2>
+        <span class="section-tag">Yönetim Kadrosu</span>
+        <h2 class="section-title">Ekip Yönetimi</h2>
         <div class="section-line"></div>
-        <p class="section-desc">Ekibimizin yönetim kadrosu</p>
+        <p class="section-desc">Anadolu Spotting Team liderlik ve yönetim kurulu</p>
       </div>
       <div class="featured-grid" id="featuredGrid"></div>
     </div>
@@ -130,28 +131,28 @@
     <div class="container">
       <div class="section-header">
         <span class="section-tag">Ekibimiz</span>
-        <h2 class="section-title">Üyelerimiz</h2>
+        <h2 class="section-title">Tüm Üyelerimiz</h2>
         <div class="section-line"></div>
         <p class="section-desc">
-          Toplam <strong id="totalMemberCount">0</strong> üye ile gökyüzünü kadrajımıza sığdırıyoruz
+          Toplam <strong id="totalMemberCount">26</strong> üye ile gökyüzünü kadrajımıza sığdırıyoruz
         </p>
       </div>
 
       <div class="members-controls">
         <div class="search-box">
           <span class="search-icon">&#128269;</span>
-          <input type="text" id="memberSearch" placeholder="Üye ara..." autocomplete="off">
+          <input type="text" id="memberSearch" placeholder="İsim, kullanıcı adı, mevki veya havalimanı ara (Örn: LTFM)..." autocomplete="off">
           <button class="search-clear" id="searchClear">&times;</button>
         </div>
         <div class="filter-buttons">
           <button class="filter-btn active" data-filter="all">
-            Tümü <span class="filter-count" id="countAll">0</span>
+            Tümü <span class="filter-count" id="countAll">26</span>
           </button>
           <button class="filter-btn" data-filter="yonetim">
-            Yönetim <span class="filter-count" id="countManager">0</span>
+            Yönetim <span class="filter-count" id="countManager">6</span>
           </button>
           <button class="filter-btn" data-filter="Üye">
-            Üye <span class="filter-count" id="countMember">0</span>
+            Üye <span class="filter-count" id="countMember">20</span>
           </button>
         </div>
       </div>
@@ -171,15 +172,14 @@
         <span class="section-tag">Galeri</span>
         <h2 class="section-title">Fotoğraf Galerisi</h2>
         <div class="section-line"></div>
-        <p class="section-desc">Ekibimizin kadrajından en etkileyici kareler</p>
+        <p class="section-desc">Ekibimizin kadrajından gökyüzünün en etkileyici kareleri</p>
       </div>
 
       <div class="gallery-categories">
         <button class="gallery-cat-btn active" data-category="all">Tümü</button>
         <button class="gallery-cat-btn" data-category="commercial">Ticari Uçaklar</button>
         <button class="gallery-cat-btn" data-category="military">Askeri Uçaklar</button>
-        <button class="gallery-cat-btn" data-category="general">Genel Havacılık</button>
-        <button class="gallery-cat-btn" data-category="airports">Havalimanları</button>
+        <button class="gallery-cat-btn" data-category="general">Genel Havacılık & Helikopter</button>
       </div>
 
       <div class="gallery-grid" id="galleryGrid"></div>
@@ -245,6 +245,7 @@
           </div>
           <h3>Topluluk</h3>
           <p>Ekibimize katılmak ister misiniz?</p>
+          <a href="basvuru.html" class="contact-link">Üyelik Başvuru Formu &rarr;</a>
           <a href="https://www.instagram.com/spoterkrinco/" target="_blank" rel="noopener" class="contact-link">Bize DM atın</a>
         </div>
       </div>
@@ -283,6 +284,8 @@
     </div>
   </footer>
 
+  <!-- XLSX support for dynamic Excel reading -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="js/members-data.js"></script>
   <script src="js/app.js"></script>
 </body>

@@ -111,6 +111,14 @@
       border-bottom: 1px solid var(--white-10);
       display: flex;
       align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .form-card-header-main {
+      display: flex;
+      align-items: center;
       gap: 12px;
     }
 
@@ -137,193 +145,88 @@
       color: var(--white-50);
     }
 
-    /* ===== NATIVE FORM ===== */
-    .app-form {
-      padding: 32px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
-
-    .form-group {
-      display: flex;
-      flex-direction: column;
+    .btn-header-external {
+      display: inline-flex;
+      align-items: center;
       gap: 6px;
-    }
-
-    .form-group label {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--white-70);
-      letter-spacing: 0.5px;
-    }
-
-    .form-group label span.req {
-      color: var(--accent);
-      margin-left: 2px;
-    }
-
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-      background: var(--white-05);
-      border: 1px solid var(--white-10);
+      padding: 8px 16px;
+      background: rgba(232,83,14,0.12);
+      border: 1px solid rgba(232,83,14,0.3);
       border-radius: var(--radius-sm);
-      padding: 12px 14px;
-      color: var(--white);
-      font-family: var(--font-body);
-      font-size: 14px;
-      transition: border-color 0.2s, background 0.2s;
-      outline: none;
-      width: 100%;
-      box-sizing: border-box;
-    }
-
-    .form-group select option {
-      background: #1a2035;
-      color: var(--white);
-    }
-
-    .form-group input::placeholder,
-    .form-group textarea::placeholder {
-      color: var(--white-30);
-    }
-
-    .form-group input:focus,
-    .form-group select:focus,
-    .form-group textarea:focus {
-      border-color: var(--accent);
-      background: rgba(232,83,14,0.05);
-    }
-
-    .form-group input.error,
-    .form-group select.error,
-    .form-group textarea.error {
-      border-color: #ef4444;
-    }
-
-    .field-error {
-      font-size: 12px;
-      color: #f87171;
-      display: none;
-    }
-
-    .field-error.show { display: block; }
-
-    .form-group textarea {
-      resize: vertical;
-      min-height: 100px;
-    }
-
-    .form-divider {
-      border: none;
-      border-top: 1px solid var(--white-10);
-      margin: 4px 0;
-    }
-
-    .form-section-title {
-      font-family: var(--font-display);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 2px;
       color: var(--accent);
-      text-transform: uppercase;
-      margin-bottom: -4px;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      transition: all 0.2s ease;
+      white-space: nowrap;
     }
 
-    .form-submit-row {
+    .btn-header-external:hover {
+      background: var(--accent);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+    /* ===== GOOGLE FORM IFRAME ===== */
+    .google-form-container {
+      position: relative;
+      width: 100%;
+      min-height: 850px;
+      background: #ffffff;
+      overflow: hidden;
+    }
+
+    .google-form-iframe {
+      width: 100%;
+      min-height: 950px;
+      height: 100%;
+      border: none;
+      display: block;
+      background: #fff;
+    }
+
+    .form-card-footer {
+      padding: 20px 32px;
+      background: rgba(10,22,40,0.95);
+      border-top: 1px solid var(--white-10);
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 16px;
       flex-wrap: wrap;
-      margin-top: 4px;
     }
 
-    .form-privacy {
-      font-size: 12px;
-      color: var(--white-40);
+    .form-footer-info {
+      font-size: 13px;
+      color: var(--white-60);
       flex: 1;
-      min-width: 200px;
+      min-width: 240px;
     }
 
-    .btn-submit {
+    .btn-form-direct {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 14px 32px;
+      padding: 12px 24px;
       background: var(--accent);
-      color: white;
       border: none;
       border-radius: var(--radius-sm);
+      color: #fff;
+      text-decoration: none;
       font-family: var(--font-display);
       font-size: 13px;
       font-weight: 700;
-      letter-spacing: 1px;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
+      letter-spacing: 0.5px;
+      transition: all 0.2s ease;
       white-space: nowrap;
     }
 
-    .btn-submit:hover { background: var(--accent-hover); }
-    .btn-submit:active { transform: scale(0.98); }
-    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
-
-    /* ===== SUCCESS STATE ===== */
-    .form-success {
-      display: none;
-      padding: 48px 32px;
-      text-align: center;
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
+    .btn-form-direct:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px var(--accent-glow);
     }
-
-    .form-success.show { display: flex; }
-
-    .success-icon {
-      width: 72px; height: 72px;
-      background: rgba(34,197,94,0.15);
-      border: 2px solid #22c55e;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 32px;
-    }
-
-    .success-title {
-      font-family: var(--font-display);
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--white);
-      letter-spacing: 1px;
-    }
-
-    .success-desc {
-      font-size: 14px;
-      color: var(--white-60);
-      max-width: 400px;
-      line-height: 1.6;
-    }
-
-    .form-alert {
-      padding: 12px 16px;
-      border-radius: var(--radius-sm);
-      font-size: 13px;
-      font-weight: 500;
-      display: none;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .form-alert.show { display: flex; }
-    .form-alert.error { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; }
-    .form-alert.info  { background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.3); color: #93c5fd; }
 
     /* ===== NOTICE CARD ===== */
     .notice-card {
@@ -406,12 +309,12 @@
       .basvuru-hero { padding: 40px 16px 32px; }
       .basvuru-features { gap: 20px; }
       .form-wrapper, .notice-card { padding: 0 16px; }
-      .form-card-header { padding: 18px 20px; }
-      .app-form { padding: 20px; gap: 16px; }
-      .form-row { grid-template-columns: 1fr; }
+      .form-card-header { padding: 18px 20px; flex-direction: column; align-items: flex-start; gap: 12px; }
+      .btn-header-external { width: 100%; justify-content: center; }
+      .form-card-footer { padding: 16px 20px; flex-direction: column; align-items: stretch; }
+      .btn-form-direct { width: 100%; justify-content: center; }
+      .google-form-container, .google-form-iframe { min-height: 850px; }
       .notice-inner { flex-direction: column; gap: 10px; }
-      .form-submit-row { flex-direction: column; align-items: stretch; }
-      .btn-submit { justify-content: center; }
     }
 
     @media (max-width: 480px) {
@@ -434,6 +337,7 @@
       <ul class="nav-menu" id="navMenu">
         <li><a href="index.html" class="nav-link">Ana Sayfa</a></li>
         <li><a href="index.html#about" class="nav-link">Hakkımızda</a></li>
+        <li><a href="index.html#management" class="nav-link">Yönetim</a></li>
         <li><a href="index.html#members" class="nav-link">Üyelerimiz</a></li>
         <li><a href="index.html#gallery" class="nav-link">Galeri</a></li>
         <li><a href="index.html#contact" class="nav-link">İletişim</a></li>
@@ -480,104 +384,35 @@
     <div class="form-wrapper">
       <div class="form-card">
         <div class="form-card-header">
-          <div class="form-card-header-icon">&#128203;</div>
-          <div class="form-card-header-text">
-            <h3>ÜYELİK BAŞVURU FORMU</h3>
-            <p>Tüm alanları eksiksiz doldurun — başvurunuz ekibimize iletilecek</p>
+          <div class="form-card-header-main">
+            <div class="form-card-header-icon">&#128203;</div>
+            <div class="form-card-header-text">
+              <h3>ÜYELİK BAŞVURU FORMU</h3>
+              <p>Tüm alanları eksiksiz doldurun — başvurunuz ekibimize iletilecek</p>
+            </div>
           </div>
+          <a href="https://docs.google.com/forms/d/e/1FAIpQLSdZNT9wfMrmsTljlFmlKXqLgaPo0YezGoInUdWQkRjWlM_9Uw/viewform?usp=dialog" target="_blank" rel="noopener" class="btn-header-external">
+            <span>&#9992;</span> Yeni Sekmede Aç &#8599;
+          </a>
         </div>
 
-        <!-- Hata / bilgi mesajı -->
-        <div class="app-form" id="appFormWrap">
-          <div class="form-alert" id="formAlert" role="alert"></div>
-
-          <p class="form-section-title">Kişisel Bilgiler</p>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label for="fAd">Ad <span class="req">*</span></label>
-              <input type="text" id="fAd" name="ad" placeholder="Adınız" autocomplete="given-name">
-              <span class="field-error" id="errAd">Bu alan zorunludur.</span>
-            </div>
-            <div class="form-group">
-              <label for="fSoyad">Soyad <span class="req">*</span></label>
-              <input type="text" id="fSoyad" name="soyad" placeholder="Soyadınız" autocomplete="family-name">
-              <span class="field-error" id="errSoyad">Bu alan zorunludur.</span>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label for="fYas">Yaş <span class="req">*</span></label>
-              <input type="number" id="fYas" name="yas" placeholder="Örn: 22" min="13" max="99">
-              <span class="field-error" id="errYas">Geçerli bir yaş girin (13-99).</span>
-            </div>
-            <div class="form-group">
-              <label for="fSehir">Şehir <span class="req">*</span></label>
-              <input type="text" id="fSehir" name="sehir" placeholder="Örn: İstanbul" autocomplete="address-level2">
-              <span class="field-error" id="errSehir">Bu alan zorunludur.</span>
-            </div>
-          </div>
-
-          <hr class="form-divider">
-          <p class="form-section-title">İletişim</p>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label for="fInstagram">Instagram Kullanıcı Adı <span class="req">*</span></label>
-              <input type="text" id="fInstagram" name="instagram" placeholder="@kullanici_adi">
-              <span class="field-error" id="errInstagram">Bu alan zorunludur.</span>
-            </div>
-            <div class="form-group">
-              <label for="fEposta">E-posta</label>
-              <input type="email" id="fEposta" name="eposta" placeholder="ornek@email.com" autocomplete="email">
-              <span class="field-error" id="errEposta">Geçerli bir e-posta adresi girin.</span>
-            </div>
-          </div>
-
-          <hr class="form-divider">
-          <p class="form-section-title">Spotting Deneyimi</p>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label for="fDeneyim">Deneyim Süresi <span class="req">*</span></label>
-              <select id="fDeneyim" name="deneyim">
-                <option value="" disabled selected>Seçiniz...</option>
-                <option value="yeni">Yeni Başlıyorum</option>
-                <option value="1-2yil">1–2 Yıl</option>
-                <option value="3-5yil">3–5 Yıl</option>
-                <option value="5+yil">5+ Yıl</option>
-              </select>
-              <span class="field-error" id="errDeneyim">Lütfen bir seçenek seçin.</span>
-            </div>
-            <div class="form-group">
-              <label for="fEkipman">Kullandığınız Ekipman</label>
-              <input type="text" id="fEkipman" name="ekipman" placeholder="Örn: Canon EOS R5, 100-400mm">
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="fNeden">Neden katılmak istiyorsunuz? <span class="req">*</span></label>
-            <textarea id="fNeden" name="neden" placeholder="Kısaca kendinizden ve motivasyonunuzdan bahsedin..."></textarea>
-            <span class="field-error" id="errNeden">Lütfen kısa bir açıklama yazın.</span>
-          </div>
-
-          <div class="form-submit-row">
-            <p class="form-privacy">Bilgileriniz yalnızca başvuru değerlendirmesi için kullanılır ve üçüncü taraflarla paylaşılmaz.</p>
-            <button type="button" class="btn-submit" id="btnGonder" onclick="submitBasvuru()">
-              <span>&#9992;</span> BAŞVURUYU GÖNDER
-            </button>
-          </div>
+        <!-- GOOGLE FORM IFRAME -->
+        <div class="google-form-container">
+          <iframe
+            src="https://docs.google.com/forms/d/e/1FAIpQLSdZNT9wfMrmsTljlFmlKXqLgaPo0YezGoInUdWQkRjWlM_9Uw/viewform?embedded=true"
+            class="google-form-iframe"
+            title="Anadolu Spotting Team Üyelik Başvuru Formu">
+            Yükleniyor…
+          </iframe>
         </div>
 
-        <!-- Başarı ekranı -->
-        <div class="form-success" id="formSuccess">
-          <div class="success-icon">&#10003;</div>
-          <p class="success-title">Başvurunuz Alındı!</p>
-          <p class="success-desc">
-            Ekibimiz başvurunuzu inceleyecek ve en kısa sürede Instagram DM veya e-posta yoluyla size geri dönüş yapacaktır.
-          </p>
-          <a href="index.html" class="btn-submit" style="text-decoration:none;">&#8592; Ana Sayfaya Dön</a>
+        <div class="form-card-footer">
+          <div class="form-footer-info">
+            <span>Formu doğrudan Google üzerinden doldurmak isterseniz:</span>
+          </div>
+          <a href="https://docs.google.com/forms/d/e/1FAIpQLSdZNT9wfMrmsTljlFmlKXqLgaPo0YezGoInUdWQkRjWlM_9Uw/viewform?usp=dialog" target="_blank" rel="noopener" class="btn-form-direct">
+            <span>&#9992;</span> Formu Yeni Sekmede Aç &#8599;
+          </a>
         </div>
       </div>
     </div>
@@ -591,6 +426,8 @@
           <p>
             Başvurunuz ekip yönetimi tarafından incelenecek ve size en kısa sürede
             Instagram DM veya e-posta yoluyla geri dönüş yapılacaktır.
+            Başvuru formuna doğrudan erişmek için
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSdZNT9wfMrmsTljlFmlKXqLgaPo0YezGoInUdWQkRjWlM_9Uw/viewform?usp=dialog" target="_blank" rel="noopener">buraya tıklayabilirsiniz</a>.
             Sorularınız için
             <a href="https://www.instagram.com/anadolu_spottingteam/" target="_blank" rel="noopener">@anadolu_spottingteam</a>
             veya
@@ -622,105 +459,8 @@
     const navMenu = document.getElementById('navMenu');
     navToggle.addEventListener('click', () => {
       navToggle.classList.toggle('active');
-      navMenu.classList.toggle('open');
+      navMenu.classList.toggle('active');
     });
-
-    function showAlert(msg, type = 'error') {
-      const el = document.getElementById('formAlert');
-      el.textContent = msg;
-      el.className = `form-alert show ${type}`;
-    }
-
-    function hideAlert() {
-      document.getElementById('formAlert').className = 'form-alert';
-    }
-
-    function getVal(id) {
-      return document.getElementById(id).value.trim();
-    }
-
-    function markError(id, errId, show) {
-      const input = document.getElementById(id);
-      const err   = document.getElementById(errId);
-      if (show) {
-        input.classList.add('error');
-        err.classList.add('show');
-      } else {
-        input.classList.remove('error');
-        err.classList.remove('show');
-      }
-    }
-
-    function validate() {
-      let ok = true;
-
-      const checks = [
-        ['fAd',        'errAd',       v => v.length > 0],
-        ['fSoyad',     'errSoyad',    v => v.length > 0],
-        ['fYas',       'errYas',      v => { const n = Number(v); return n >= 13 && n <= 99; }],
-        ['fSehir',     'errSehir',    v => v.length > 0],
-        ['fInstagram', 'errInstagram',v => v.length > 0],
-        ['fDeneyim',   'errDeneyim',  v => v.length > 0],
-        ['fNeden',     'errNeden',    v => v.length >= 10],
-      ];
-
-      for (const [id, errId, fn] of checks) {
-        const val = getVal(id);
-        const valid = fn(val);
-        markError(id, errId, !valid);
-        if (!valid) ok = false;
-      }
-
-      // E-posta opsiyonel ama doldurulduysa geçerli olmalı
-      const eposta = getVal('fEposta');
-      if (eposta && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(eposta)) {
-        markError('fEposta', 'errEposta', true);
-        ok = false;
-      } else {
-        markError('fEposta', 'errEposta', false);
-      }
-
-      return ok;
-    }
-
-    window.submitBasvuru = function() {
-      hideAlert();
-      if (!validate()) {
-        showAlert('Lütfen kırmızı işaretli alanları düzeltin.', 'error');
-        return;
-      }
-
-      const btn = document.getElementById('btnGonder');
-      btn.disabled = true;
-      btn.textContent = 'Gönderiliyor...';
-
-      const data = {
-        ad:        getVal('fAd'),
-        soyad:     getVal('fSoyad'),
-        yas:       Number(getVal('fYas')),
-        sehir:     getVal('fSehir'),
-        instagram: getVal('fInstagram'),
-        eposta:    getVal('fEposta') || '',
-        deneyim:   getVal('fDeneyim'),
-        ekipman:   getVal('fEkipman') || '',
-        neden:     getVal('fNeden'),
-        tarih:     new Date().toISOString()
-      };
-
-      // Başvuru verisini yerel olarak sakla
-      try {
-        const existing = JSON.parse(localStorage.getItem('ast_applications') || '[]');
-        existing.push(data);
-        localStorage.setItem('ast_applications', JSON.stringify(existing));
-      } catch (e) {
-        // depolama erişiminde hata olursa sessiz geç
-      }
-
-      setTimeout(() => {
-        document.getElementById('appFormWrap').style.display = 'none';
-        document.getElementById('formSuccess').classList.add('show');
-      }, 400);
-    };
   </script>
 </body>
 </html>
